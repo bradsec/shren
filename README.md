@@ -36,8 +36,6 @@ sudo chmod 755 /usr/local/sbin/shren
 ## Usage
 
 ```terminal
-Usage:
-
     shren [target directory] [-options]
 
     - The first parameter [target directory] is the base directory to search
@@ -69,9 +67,11 @@ Usage:
     -c   Preverve existing case of directory and file name. 
          Default: -r converts both file and directory names to lowercase.
     -p   Preview results. No changes to directories or files. Use with other options.
-    -n   Don't replace hyphens in names.
+    -x   Remove these chars/words from names (seperate with spaces) ie. -x "fish dog abc 123"\
     -z   Strip out underscores at end or renaming process (not before).
          Effectively this will remove spaces from names ie: this_file > thisfile
+    
+    --hyphens Use hyphens in names inplace of underscores
 ```
 ## Testing
 **Two test script files included:**

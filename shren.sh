@@ -36,7 +36,7 @@ Usage:
     -e   Remove any empty directories found.
     -f   Remove/delete files with these names (seperate with spaces) ie. -k "file1.tmp file2.tmp"
     -t   Remove/delete files with these file extensions (seperate with spaces no '.' or '*') ie. -t "tmp temp"
-    -o   Display configuration options and values
+    -o   Display configuration options and values.
     -s   Secure erase files with shred commands.
     -w   Set the overwrite times for shred. Default overwrite: 4
     -i   Ignore and allow restricted path names like '.' or '/'
@@ -46,9 +46,12 @@ Usage:
     -c   Preverve existing case of directory and file name. 
          Default: -r converts both file and directory names to lowercase.
     -p   Preview results. No changes to directories or files. Use with other options.
-    -n   Don't replace hyphens in names.
+    -x   Remove these strings from names (seperate with spaces) ie. -x "fish dog abc 123"
     -z   Strip out underscores at end or renaming process (not before).
          Effectively this will remove spaces from names ie: this_file > thisfile
+    
+    --hyphens Use hyphens in names inplace of underscores.
+    --nolog No logging of changes to log file.
 
 EOF
 exit
@@ -103,22 +106,25 @@ function message() {
     esac
 }
 
-function add_log() {
-    logFile="${config[logPath]}"
 
-    if [[ ! -f "${logFile}" ]]; then
+function add_log() {
+    if [[ ${config[logging]} == true ]]; then
+        logFile="${config[logPath]}"
+        if [[ ! -f "${logFile}" ]]; then
 cat << EOF >> "${logFile}"
 ##########################
 ## [SH][REN] CHANGE LOG ##
 ##########################
 
 EOF
-    fi
-    local text=${1}
-    if [[ ! -z ${text} ]]; then
-        echo -e "${text}" >> "${logFile}"
+        fi
+        local text=${1}
+        if [[ ! -z ${text} ]]; then
+            echo -e "${text}" >> "${logFile}"
+        fi
     fi
 }
+
 
 function check_continue() {
     local response
@@ -137,6 +143,7 @@ function check_continue() {
         esac
     done
 }
+
 
 function count_results() {
     # Function to count up total directories and files to be processed.
@@ -167,11 +174,13 @@ function count_results() {
     echo
 }
 
+
 function check_array() {
     if ((! ${#@})); then
         exit 0
     fi
 }
+
 
 function show_options() {
     if [[ ${config[showOpts]} == true ]]; then
@@ -186,6 +195,7 @@ function show_options() {
     echo
 fi
 }
+
 
 function remove_empty() {
     # Check array contains elements. Exit recursive search if no files or directories are found.
@@ -210,50 +220,111 @@ function remove_empty() {
 }
 
 function remove_file() {
+    file="${@}"
+    if [[ "${config[preview]}" == false ]]; then
+        if [[ "${config[confirm]}" == true ]]; then
+            check_continue "Remove this file"
+        fi
+        if [[ "${continued}" == true ]] || [[ "${config[confirm]}" == false ]]; then
+            if [[ "${config[useShred]}" == true ]]; then
+                shred -uz -n ${config[overwrite]} "${file}" && message SHRED "File: ${file}" || message FAIL "Unable to remove file: ${file}"
+                add_log "shred -uz -n ${config[overwrite]} \"${file}\""
+            else 
+                rm "${file}" && message REMOVE "File: ${file}" || message FAIL "Unable to remove file: ${file}"
+                add_log "rm \"${file}\""
+            fi
+        fi
+    fi
+}
+
+function match_file() {
     # Check array contains elements. Exit recursive search if no files or directories are found.
     for v in "${@}"; do
         if [[ -f "${v}" ]]; then
-            if [[ "${config[useShred]}" == true ]]; then
-                cmdMessage="SHRED"
-            else
-                cmdMessage="REMOVE"
-            fi
             for f in ${config[removeFile]}; do
                 if [[ "${v}" == *"/${f}" ]]; then
                     message MATCH "File: ${f}"
                     message MATCH "${v}"
-                    if [[ "${config[preview]}" == false ]]; then
-                        if [[ "${config[confirm]}" == true ]]; then
-                            check_continue "Remove this file"
-                        fi
-                        if [[ "${continued}" == true ]] || [[ "${config[confirm]}" == false ]]; then
-                            [[ "${config[useShred]}" == true ]] && shred -uz -n ${config[overwrite]} "${v}" || rm "${v}"
-                            [[ $? -eq 0 ]] && message ${cmdMessage} "File: ${v}" || message FAIL "Unable to remove file: ${v}"
-                        fi
-                    fi
+                    remove_file "${v}"
                 fi          
             done
             for t in ${config[removeFileType]}; do
                 if [[ "${v}" == *".${t}" ]]; then
                     message MATCH "File Type: *.${t}"
                     message MATCH "${v}"
-                    if [[ "${config[preview]}" == false ]]; then
-                        if [[ "${config[confirm]}" == true ]]; then
-                            check_continue "Remove this file"
-                        fi
-                        if [[ "${continued}" == true ]] || [[ "${config[confirm]}" == false ]]; then
-                            [[ "${config[useShred]}" == true ]] && shred -uz -n ${config[overwrite]} "${v}" || rm "${v}"
-                            [[ $? -eq 0 ]] && message ${cmdMessage} "File: ${v}" || message FAIL "Unable to remove file: ${v}"
-                        fi
-                    fi
+                    remove_file "${v}"
                 fi   
             done
         fi
     done
 }
 
+
+function clean_name() {
+    # Do directory and file name changes with one lot of code (DRY).
+    # Take in newName from other functions
+    newName="${@}"
+    if [[ "${config[useHyphens]}" == false ]]; then
+        newName="${newName//-/_}"
+    fi
+    newName=$(echo "${newName}" | sed 's/[^a-zA-Z0-9.//_-]//g')
+
+    # Check for any strings to be removed.
+    if [[ ! -z ${config[removeString]} ]]; then
+        for str in ${config[removeString]}; do
+            newName="${newName//${str}/}"
+        done
+    fi
+
+    # Fix when renaming results in strange combinations
+    # Bad combinations where one hyphen should be left
+    if [[ "${config[useHyphens]}" == true ]]; then
+        local fixCombos="-- -_ _- .-"
+        for c in ${fixCombos}; do
+            while [[ "${newName}" == *"${c}"* ]]; do
+                newName="${newName//${c}/-}"
+            done
+        done
+    fi
+
+    # Bad combinations where one underscore should be left
+    local fixCombos="__ ._"
+    for c in ${fixCombos}; do
+        while [[ "${newName}" == *"${c}"* ]]; do
+            newName="${newName//${c}/_}"
+        done
+    done
+
+    # Bad combinations where one period should be left
+    local fixCombos=".. _."
+    for c in ${fixCombos}; do
+        while [[ "${newName}" == *"${c}"* ]]; do
+            newName="${newName//${c}/.}"
+        done
+    done
+
+    if [[ "${config[lowerCase]}" == true ]]; then
+        newName="${newName,,}"
+    fi
+
+    # Replace underscores with hyphens if true
+    if [[ "${config[useHyphens]}" == true ]]; then
+        while [[ "${newName}" == *"_"* ]]; do
+            newName="${newName//_/-}"
+        done
+    fi
+
+    # Strip out underscores if config[underscores]=true
+    if [[ "${config[underscores]}" == false ]]; then
+        while [[ "${newName}" == *"_"* ]]; do
+            newName="${newName//_/}"
+        done
+    fi
+    # Return modified newName through echo statement as bash does not support returns.
+    echo ${newName}
+}
+
 function clean_and_rename() {
-    
     # Check for directories to be renamed if config[filesOnly]=false
         message INFOFULL "Checking directory and file names..."
         for v in "${@}"; do
@@ -263,41 +334,12 @@ function clean_and_rename() {
             if [[ "${config[filesOnly]}" == false ]]; then
                 oldName="${v//${config[baseDir]}/}"
                 newName="${oldName// /_}"
-                if [[ "${config[replaceHyphens]}" == true ]]; then
-                    newName="${newName//-/_}"
-                fi
                 newName="${newName//./_}"
-                newName=$(echo "${newName}" | sed 's/[^a-zA-Z0-9.//_-]//g')
 
-                # Sometimes duplicated underscores occur. Loop and change to single underscores.
-                while [[ "${newName}" == *"__"* ]]; do
-                    newName="${newName//__/_}"
-                done
+                # Send newName to clean_name function for clean up
+                newName=$(clean_name "${newName}")
 
-                if [[ "${config[replaceHyphens]}" == false ]]; then
-                    while [[ "${newName}" == *"--"* ]]; do
-                        newName="${newName//--/-}"
-                    done
-                    while [[ "${newName}" == *"-_"* ]]; do
-                        newName="${newName//-_/-}"
-                    done
-                    while [[ "${newName}" == *"_-"* ]]; do
-                        newName="${newName//_-/-}"
-                    done
-                fi
-
-                if [[ "${config[lowerCase]}" == true ]]; then
-                    newName="${newName,,}"
-                fi
-
-                # Strip out underscores if config[underscores]=true
-                if [[ "${config[underscores]}" == false ]]; then
-                    while [[ "${newName}" == *"_"* ]]; do
-                        newName="${newName//_/}"
-                    done
-                fi
-
-               # Checks directory needs to be renamed. Renames and logs changes.
+                # Checks directory needs to be renamed. Renames and logs changes.
                 if [[ "${oldName}" != "${newName}" ]]; then
                     message OLD "${config[baseDir]}${oldName}"
                     message NEW "${config[baseDir]}${newName}"
@@ -326,7 +368,7 @@ function clean_and_rename() {
                 fileName=${oldName##*/}
                 subDir=${oldName//${fileName}}
                 newName="${fileName// /_}"
-                if [[ "${config[replaceHyphens]}" == true ]]; then
+                if [[ "${config[useHyphens]}" == false ]]; then
                     newName="${newName//-/_}"
                 fi
                 # Remove all by specified characters in sed command
@@ -345,48 +387,8 @@ function clean_and_rename() {
                     # There may be files which do not have an extension.
                     newName="${newName//./_}"
                 fi
-
-                # Loops to remove chars where more than one match exists
-                if [[ "${config[replaceHyphens]}" == false ]]; then
-                    while [[ "${newName}" == *"--"* ]]; do
-                        newName="${newName//--/-}"
-                    done
-                    while [[ "${newName}" == *"-_"* ]]; do
-                        newName="${newName//-_/-}"
-                    done
-                    while [[ "${newName}" == *"_-"* ]]; do
-                        newName="${newName//_-/-}"
-                    done
-                    while [[ "${newName}" == *".-"* ]]; do
-                    newName="${newName//.-/-}"
-                    done
-                    while [[ "${newName}" == *"-."* ]]; do
-                        newName="${newName//-./.}"
-                    done
-                fi
-
-                while [[ "${newName}" == *"__"* ]]; do
-                    newName="${newName//__/_}"
-                done
-                while [[ "${newName}" == *".."* ]]; do
-                    newName="${newName//../.}"
-                done
-                while [[ "${newName}" == *"._"* ]]; do
-                    newName="${newName//._/_}"
-                done
-                while [[ "${newName}" == *"_."* ]]; do
-                    newName="${newName//_./.}"
-                done
-                
-                if [[ "${config[lowerCase]}" == true ]]; then
-                    newName="${newName,,}"
-                fi
-
-                if [[ "${config[underscores]}" == false ]]; then
-                    while [[ "${newName}" == *"_"* ]]; do
-                        newName="${newName//_/}"
-                    done
-                fi
+                # Send newName to clean_name function for clean up
+                newName=$(clean_name "${newName}")
 
                 # Checks file needs to be renamed. Renames and logs changes.
                 if [[ "${fileName}" != "${newName}" ]]; then
@@ -418,6 +420,7 @@ function main() {
     config=(
         [baseDir]=""
         [logPath]="${HOME}/shren_change.log"
+        [logging]=true
         [maxDepth]=10
         [lowerCase]=true
         [preview]=false
@@ -428,12 +431,13 @@ function main() {
         [showOpts]=false
         [removeFileType]=""
         [removeFile]=""
+        [removeString]=""
         [overwrite]=4
         [showUsage]=false
         [useShred]=false
         [underscores]=true
-        [replaceHyphens]=true
-        [renameFiles]=false
+        [useHyphens]=false
+        [rename]=false
         [removeEmpty]=false
         [dateString]="$(date +"%Y%m%d%H%M%S")"
     )
@@ -442,19 +446,24 @@ function main() {
     [[ "${1}" == "--help" ]] && show_usage
     [[ "${1}" == "--usage" ]] && show_usage
 
-    # Get longer command line arguments
-    for o in ${@:2}; do
-        case "${o}" in
-        --rd) config[dirsOnly]=true;;
-        --rf) config[filesOnly]=true;;
+    allArgs=${@:2}
+    shortArgs=${allArgs}
+
+    # Process long arguments and return short arguments for getopts
+    for arg in ${allArgs}; do
+        case "${arg}" in
+        --rd) config[dirsOnly]=true && config[rename]=true && shortArgs="${shortArgs//${arg}/}";;
+        --rf) config[filesOnly]=true && config[rename]=true && shortArgs="${shortArgs//${arg}/}";;
+        --hyphens) config[useHyphens]=true && shortArgs="${shortArgs//${arg}/}";;
+        --nolog) config[logging]=false && shortArgs="${shortArgs//${arg}/}";;
         esac
     done
 
     # Get short -x command line arguments
-    while getopts :l:m:f:t:w:hpcsuniorzeyl opts "${@:2}"
+    while getopts :l:m:f:t:w:x:hpcsuiorzeyl opts "${shortArgs}"
     do
         case "${opts}" in
-            r) config[renameFiles]=true;;
+            r) config[rename]=true;;
             l) config[logPath]=${OPTARG};;
             m) config[maxDepth]=${OPTARG};;
             c) config[lowerCase]=false;;
@@ -469,8 +478,8 @@ function main() {
             i) config[ignorePath]=true;;
             o) config[showOpts]=true;;
             y) config[confirm]=false;;
+            x) config[removeString]=${OPTARG};;
             z) config[underscores]=false;;
-            n) config[replaceHyphens]=false;;
             # *) echo "Invalid command line switch specified: -${OPTARG}" && exit 1;;
         esac
     done
@@ -513,17 +522,18 @@ function main() {
     # Do the work
     currentDirectory=${config[baseDir]}
     add_log "\n### ${config[dateString]}"
+    add_log "### $(basename ${0}) ${config[baseDir]} ${allArgs}"
     for i in $(seq ${config[maxDepth]}); do
         currentDirectory+=/**
         check_array ${currentDirectory[@]}
-        # 1. Check files to be removed first
+        # Check files to be removed first
         if [[ ! -z "${config[removeFileType]}" ]] || [[ ! -z "${config[removeFile]}" ]]; then
-            remove_file ${currentDirectory[@]}
+            match_file ${currentDirectory[@]}
         fi
-        # 2. Check for empty directories
+        # Check for empty directories
         [[ "${config[removeEmpty]}" == true ]] && remove_empty ${currentDirectory[@]}
-        # 3. Run clean and rename
-        [[ "${config[renameFiles]}" == true ]] && clean_and_rename ${currentDirectory[@]}
+        # Run clean and rename
+        [[ "${config[rename]}" == true ]] && clean_and_rename ${currentDirectory[@]}
     done
 }
 

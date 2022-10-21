@@ -15,6 +15,8 @@ main() {
     touch "${testPath}/not_empty/a_file!!!#...in   not_empty.txt"
     touch "${testPath}/Te\$\$ST F#@#!ILe-👍- Zero %.png"
     touch "${testPath}/dir LeVeL O**N**E/Te\$\$\$ST F!ILe-- One %A001.js"
+    touch "${testPath}/dir LeVeL O**N**E/catfish.png"
+    touch "${testPath}/dir LeVeL O**N**E/bigdog.gif"
     touch "${testPath}/dir LeVeL O**N**E/TeST F!iLe-- One \$b002.json"
     touch "${testPath}/dir LeVeL O**N**E/TeST F!ile....One **c...003....bz1"
     touch "${testPath}/dir LeVeL O**N**E/D!IR... LE$%V%EL ___TW?O/Te##@S***!T   F!!!!😂😂😂IL###e -- Tw#@!o a.tar.gz"
@@ -24,7 +26,7 @@ main() {
     before=$(ls -RF "${testPath}")
     
     echo -e "[\033[36mINFO\033[0m] Running shren.sh on ${testPath}..."
-    bash shren.sh ${testPath} -yer
+    bash shren.sh ${testPath} -yero -x "dog"
     
     after=$(ls -RF "${testPath}")
     
