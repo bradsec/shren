@@ -13,7 +13,7 @@
 - Remove whitespace. Single spaces and periods are replaced with underscores.
 - Search and remove specific file names or file types.
 - Recursive directory search with custom depth.
-- No external programs required (uses built-in local system commands only).
+- No external programs required (uses built-in system commands).
 
 ## Installation
 
@@ -240,16 +240,6 @@ Command used: `bash shren.sh ${testPath} -ye -f "removeme1.zip" -t "tmp temp 001
 ```terminal
 [SH][REN] TESTING FILE AND EMPTY DIRECTORY REMOVAL
 
-[INFO] Creating directories and files for shren script testing...
-[INFO] Running shren.sh on /shren_testing...
-
-[SH][REN]
-
-Fri 21 Oct 2022 03:40:22 PM AEST
-
-[INFO] Scanning /shren_testing...
-[INFO] Contains 6 directories and 13 files...
-
 [EMPTY] Directory: /shren_testing/an empty one
 [REMOVED] Directory: /shren_testing/an empty one
 [MATCH] File: removeme1.zip
@@ -266,6 +256,4 @@ Fri 21 Oct 2022 03:40:22 PM AEST
 [REMOVED] File: /shren_testing/not emp@@@ty one/this is a temp file 003.tmp
 [EMPTY] Directory: /shren_testing/not emp@@@ty one/empty two
 [REMOVED] Directory: /shren_testing/not emp@@@ty one/empty two
-
-[INFO] Test completed...
 ```
