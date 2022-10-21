@@ -476,7 +476,7 @@ function main() {
     done
 
     # Restrict base path to prevent accidental renaming or deletion
-    if [[ "${config[anyPath]}" == false ]]; then
+    if [[ "${config[ignorePath]}" == false ]]; then
         disallowedPaths=". / ./ ../ ../.. ./.. ../../.."
         if [[ -z "${1}" ]]; then
             message WARN "No target/base directory specified: ${1}"
