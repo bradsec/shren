@@ -57,7 +57,7 @@ sudo chmod 755 /usr/local/sbin/shren
     -e   Remove any empty directories found.
     -f   Remove/delete files with these names (seperate with spaces) ie. -k "file1.tmp file2.tmp"
     -t   Remove/delete files with these file extensions (seperate with spaces no '.' or '*') ie. -t "tmp temp"
-    -o   Display configuration options and values
+    -o   Display configuration options and values.
     -s   Secure erase files with shred commands.
     -w   Set the overwrite times for shred. Default overwrite: 4
     -i   Ignore and allow restricted path names like '.' or '/'
@@ -67,11 +67,12 @@ sudo chmod 755 /usr/local/sbin/shren
     -c   Preverve existing case of directory and file name. 
          Default: -r converts both file and directory names to lowercase.
     -p   Preview results. No changes to directories or files. Use with other options.
-    -x   Remove these chars/words from names (seperate with spaces) ie. -x "fish dog abc 123"\
+    -x   Remove these strings from names (seperate with spaces) ie. -x "fish dog abc 123"
     -z   Strip out underscores at end or renaming process (not before).
          Effectively this will remove spaces from names ie: this_file > thisfile
     
-    --hyphens Use hyphens in names inplace of underscores
+    --hyphens Use hyphens in names inplace of underscores.
+    --nolog No logging of changes to log file.
 ```
 ## Testing
 **Two test script files included:**
