@@ -214,10 +214,8 @@ function remove_file() {
     for v in "${@}"; do
         if [[ -f "${v}" ]]; then
             if [[ "${config[useShred]}" == true ]]; then
-                cmd=$(shred -uz -n ${config[overwrite]} "${v}")
                 cmdMessage="SHRED"
             else
-                cmd=$(rm "${v}")
                 cmdMessage="REMOVE"
             fi
             for f in ${config[removeFile]}; do
@@ -229,7 +227,8 @@ function remove_file() {
                             check_continue "Remove this file"
                         fi
                         if [[ "${continued}" == true ]] || [[ "${config[confirm]}" == false ]]; then
-                            ${cmd} && message ${cmdMessage} "File: ${v}" || message FAIL "Unable to remove file: ${v}"
+                            [[ "${config[useShred]}" == true ]] && shred -uz -n ${config[overwrite]} "${v}" || rm "${v}"
+                            [[ $? -eq 0 ]] && message ${cmdMessage} "File: ${v}" || message FAIL "Unable to remove file: ${v}"
                         fi
                     fi
                 fi          
@@ -243,7 +242,8 @@ function remove_file() {
                             check_continue "Remove this file"
                         fi
                         if [[ "${continued}" == true ]] || [[ "${config[confirm]}" == false ]]; then
-                            ${cmd} && message ${cmdMessage} "File: ${v}" || message FAIL "Unable to remove file: ${v}"
+                            [[ "${config[useShred]}" == true ]] && shred -uz -n ${config[overwrite]} "${v}" || rm "${v}"
+                            [[ $? -eq 0 ]] && message ${cmdMessage} "File: ${v}" || message FAIL "Unable to remove file: ${v}"
                         fi
                     fi
                 fi   
