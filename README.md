@@ -1,6 +1,6 @@
-# shren
+# [SH][REN]
 
-**A bash [SH]ell script to batch clean and [REN]ame directories and files**
+**A ba[SH] shell script to batch clean and [REN]ame directories and files**
 
 *** Tested on Debian linux and macOS BigSur ***
 
@@ -11,9 +11,28 @@
 - Batch rename and clean up messy download or document directories.
 - Remove non-alphanumeric characters from directory and file names.
 - Remove whitespace. Single spaces and periods are replaced with underscores.
+- Remove specific strings/text from directory or file names.
 - Search and remove specific file names or file types.
 - Recursive directory search with custom depth.
 - No external programs required (uses built-in system commands).
+
+## Requirements
+
+- Script requires bash version >= 4
+- macOS releases may be running bash version 3
+```terminal
+# Fix/update version on macOS using homebrew
+
+# Check version
+bash --version
+
+# To update using homebrew
+brew install bash
+
+# Restart terminal or run 
+exec bash
+```
+
 
 ## Installation
 
@@ -26,7 +45,7 @@ cd ~
 git clone https://github.com/bradsec/shren.git
 cd shren
 
-# Placing in /usr/local/sbin will allow all users access
+# Copy script to a directory in the user $PATH such as /usr/sbin or /usr/local/sbin
 sudo cp shren.sh /usr/local/sbin/shren
 
 # Make script readable and executable
