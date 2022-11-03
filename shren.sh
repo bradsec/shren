@@ -341,8 +341,8 @@ function clean_and_rename() {
 
                 # Checks directory needs to be renamed. Renames and logs changes.
                 if [[ "${oldName}" != "${newName}" ]]; then
-                    message OLD "${config[baseDir]}${oldName}"
-                    message NEW "${config[baseDir]}${newName}"
+                    message OLD "Directory: ${config[baseDir]}${oldName}"
+                    message NEW "Directory: ${config[baseDir]}${newName}"
                     if [[ "${config[preview]}" == false ]]; then
                         if [[ "${config[confirm]}" == true ]]; then
                             check_continue "Rename this directory"
@@ -392,8 +392,8 @@ function clean_and_rename() {
 
                 # Checks file needs to be renamed. Renames and logs changes.
                 if [[ "${fileName}" != "${newName}" ]]; then
-                    message OLD "${config[baseDir]}/${subDir}${fileName}"
-                    message NEW "${config[baseDir]}/${subDir}${newName}"
+                    message OLD "File: ${config[baseDir]}/${subDir}${fileName}"
+                    message NEW "File: ${config[baseDir]}/${subDir}${newName}"
                     if [[ "${config[preview]}" == false ]]; then
                         if [[ "${config[confirm]}" == true ]]; then
                             check_continue "Rename this file"

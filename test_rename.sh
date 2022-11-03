@@ -12,6 +12,9 @@ main() {
     mkdir -p "${testPath}"
     mkdir -p "${testPath}/dir LeVeL O**N**E/D!IR... LE$%V%EL ___TW?O/DI%%%R--- L*E*V*E*L -----ThREe"
     mkdir -p "${testPath}/not_empty/empty_o@@ne/empty!!! two/empty####...three/empty&&& four"
+    mkdir -p "${testPath}/not.empty.dot.one/not.empty.dot.two"
+    touch "${testPath}/not.empty.dot.one/test-me1.txt"
+    touch "${testPath}/not.empty.dot.one/not.empty.dot.two/test-me2.txt"
     touch "${testPath}/not_empty/a_file!!!#...in   not_empty.txt"
     touch "${testPath}/Te\$\$ST F#@#!ILe-👍- Zero %.png"
     touch "${testPath}/dir LeVeL O**N**E/Te\$\$\$ST F!ILe-- One %A001.js"
@@ -26,7 +29,7 @@ main() {
     before=$(ls -RF "${testPath}")
     
     echo -e "[\033[36mINFO\033[0m] Running shren.sh on ${testPath}..."
-    bash shren.sh ${testPath} -yero -x "dog"
+    bash shren.sh ${testPath} -yer
     
     after=$(ls -RF "${testPath}")
     
