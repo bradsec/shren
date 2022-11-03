@@ -203,13 +203,13 @@ function remove_empty() {
         if [[ -d "${v}" ]]; then
             local currentDir="${v}"
             while [[ -n "$(find "${currentDir}" -maxdepth 0 -type d -empty 2>/dev/null)" ]] && [[ "${currentDir}" != "${config[baseDir]}" ]]; do
-                message EMPTY "Directory: ${currentDir}"
+                message EMPTY "Dir: ${currentDir}"
                     if [[ "${config[preview]}" == false ]]; then
                         if [[ "${config[confirm]}" == true ]]; then
                             check_continue "Remove this directory"
                         fi
                         if [[ "${continued}" == true ]] || [[ "${config[confirm]}" == false ]]; then
-                            rmdir "${currentDir}" && message REMOVE "Directory: ${currentDir}" || message FAIL "Unable to remove empty directory: ${currentDir}"
+                            rmdir "${currentDir}" && message REMOVE "Dir: ${currentDir}" || message FAIL "Unable to remove empty Dir: ${currentDir}"
                             add_log "rmdir \"${currentDir}\""
                         fi
                     fi
@@ -341,21 +341,21 @@ function clean_and_rename() {
 
                 # Checks directory needs to be renamed. Renames and logs changes.
                 if [[ "${oldName}" != "${newName}" ]]; then
-                    message OLD "Directory: ${config[baseDir]}${oldName}"
-                    message NEW "Directory: ${config[baseDir]}${newName}"
+                    message OLD "Dir: ${config[baseDir]}${oldName}"
+                    message NEW "Dir: ${config[baseDir]}${newName}"
                     if [[ "${config[preview]}" == false ]]; then
                         if [[ "${config[confirm]}" == true ]]; then
                             check_continue "Rename this directory"
                         fi
                         if [[ "${continued}" == true ]] || [[ "${config[confirm]}" == false ]]; then
-                            mv "${config[baseDir]}${oldName}" "${config[baseDir]}${newName}" && message RENAME "Directory: ${config[baseDir]}${newName}" || message FAIL "Unable to rename directory: ${config[baseDir]}${oldName}"
+                            mv "${config[baseDir]}${oldName}" "${config[baseDir]}${newName}" && message RENAME "Dir: ${config[baseDir]}${newName}" || message FAIL "Unable to rename Dir: ${config[baseDir]}${oldName}"
                             add_log "mv \"${config[baseDir]}${oldName}\" \"${config[baseDir]}${newName}\""
                         else
-                            message SKIP "${v}${oldName}"
+                            message SKIP "Dir: ${v}${oldName}"
                         fi
                     fi
                 else
-                    message SKIP "${v}${oldName}"
+                    message SKIP "Dir: ${v}${oldName}"
                 fi
             fi
             fi
@@ -402,11 +402,11 @@ function clean_and_rename() {
                             mv "${config[baseDir]}/${oldName}" "${config[baseDir]}/${subDir}${newName}" && message RENAME "File: ${config[baseDir]}/${subDir}${newName}" || message FAIL "An error occurred renaming file: ${newName}"
                             add_log "mv \"${config[baseDir]}/${oldName}\" \"${config[baseDir]}/${subDir}${newName}\""
                         else 
-                            message SKIP "${config[baseDir]}/${oldName}"
+                            message SKIP "File: ${config[baseDir]}/${oldName}"
                         fi
                     fi
                 else
-                    message SKIP "${config[baseDir]}/${oldName}"
+                    message SKIP "File: ${config[baseDir]}/${oldName}"
                 fi
             fi
         done
