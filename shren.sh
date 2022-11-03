@@ -507,7 +507,11 @@ function main() {
     fi
     
     # Set baseDir
-    config[baseDir]="${1}"
+    if [[ "${1:0-1}" == "/" ]]; then
+        config[baseDir]="${1%?}"
+    else
+        config[baseDir]="${1}"
+    fi
 
     # Check options
     [[ ${config[showUsage]} = true ]] && show_usage
