@@ -21,7 +21,7 @@
 - Script requires bash version >= 4
 - macOS releases may be running bash version 3
 ```terminal
-# Fix/update version on macOS using homebrew
+# Fix/upgrade bash version on macOS using homebrew
 
 # Check version
 bash --version
@@ -46,6 +46,8 @@ git clone https://github.com/bradsec/shren.git
 cd shren
 
 # Copy script to a directory in the user $PATH such as /usr/sbin or /usr/local/sbin
+# .sh extension can be omitted when copied so command can be used as shren not shren.sh
+
 sudo cp shren.sh /usr/local/sbin/shren
 
 # Make script readable and executable
@@ -105,100 +107,17 @@ sudo chmod 755 /usr/local/sbin/shren
 Command used: `bash shren.sh ${testPath} -yer` 
 
 ```terminal
-[SH][REN] TESTING FILE AND DIRECTORY RENAMING...
-
-[INFO] Creating directories and files for shren script testing...
-[INFO] Running shren.sh on /shren_testing...
-
-[SH][REN]
-
-[INFO] Scanning /shren_testing...
-[INFO] Contains 9 directories and 8 files...
-
-[INFO] Checking directory and file names...
-
-[INFO] Processing /shren_testing/dir LeVeL O**N**E
-[OLD] /shren_testing/dir LeVeL O**N**E
-[NEW] /shren_testing/dir_level_one
-[RENAMED] Directory: /shren_testing/dir_level_one
-
-[INFO] Processing /shren_testing/not_empty
-[SKIP] /shren_testing/not_empty/not_empty
-[OLD] /shren_testing/Te$$ST F#@#!ILe-👍- Zero %.png
-[NEW] /shren_testing/test_file_zero.png
-[RENAMED] File: /shren_testing/test_file_zero.png
-[INFO] Checking directory and file names...
-
-[INFO] Processing /shren_testing/dir_level_one/D!IR... LE$%V%EL ___TW?O
-[OLD] /shren_testing/dir_level_one/D!IR... LE$%V%EL ___TW?O
-[NEW] /shren_testing/dir_level_one/dir_level_two
-[RENAMED] Directory: /shren_testing/dir_level_one/dir_level_two
-
-[INFO] Processing /shren_testing/not_empty/empty_o@@ne
-[OLD] /shren_testing/not_empty/empty_o@@ne
-[NEW] /shren_testing/not_empty/empty_one
-[RENAMED] Directory: /shren_testing/not_empty/empty_one
-[OLD] /shren_testing/dir_level_one/Te$$$ST F!ILe-- One %A001.js
-[NEW] /shren_testing/dir_level_one/test_file_one_a001.js
-[RENAMED] File: /shren_testing/dir_level_one/test_file_one_a001.js
-[OLD] /shren_testing/dir_level_one/TeST F!iLe-- One $b002.json
-[NEW] /shren_testing/dir_level_one/test_file_one_b002.json
-[RENAMED] File: /shren_testing/dir_level_one/test_file_one_b002.json
-[OLD] /shren_testing/dir_level_one/TeST F!ile....One **c...003....bz1
-[NEW] /shren_testing/dir_level_one/test_file_one_c_003.bz1
-[RENAMED] File: /shren_testing/dir_level_one/test_file_one_c_003.bz1
-[OLD] /shren_testing/not_empty/a_file!!!#...in   not_empty.txt
-[NEW] /shren_testing/not_empty/a_file_in_not_empty.txt
-[RENAMED] File: /shren_testing/not_empty/a_file_in_not_empty.txt
-[INFO] Checking directory and file names...
-
-[INFO] Processing /shren_testing/dir_level_one/dir_level_two/DI%%%R--- L*E*V*E*L -----ThREe
-[OLD] /shren_testing/dir_level_one/dir_level_two/DI%%%R--- L*E*V*E*L -----ThREe
-[NEW] /shren_testing/dir_level_one/dir_level_two/dir_level_three
-[RENAMED] Directory: /shren_testing/dir_level_one/dir_level_two/dir_level_three
-
-[INFO] Processing /shren_testing/not_empty/empty_one/empty!!! two
-[OLD] /shren_testing/not_empty/empty_one/empty!!! two
-[NEW] /shren_testing/not_empty/empty_one/empty_two
-[RENAMED] Directory: /shren_testing/not_empty/empty_one/empty_two
-[OLD] /shren_testing/dir_level_one/dir_level_two/Te##@S***!T   F!!!!😂😂😂IL###e -- Tw#@!o a.tar.gz
-[NEW] /shren_testing/dir_level_one/dir_level_two/test_file_two_a.tar.gz
-[RENAMED] File: /shren_testing/dir_level_one/dir_level_two/test_file_two_a.tar.gz
-[OLD] /shren_testing/dir_level_one/dir_level_two/Te##@S**!T   F!!!!iL###e  Two b.jpeg
-[NEW] /shren_testing/dir_level_one/dir_level_two/test_file_two_b.jpeg
-[RENAMED] File: /shren_testing/dir_level_one/dir_level_two/test_file_two_b.jpeg
-[INFO] Checking directory and file names...
-
-[INFO] Processing /shren_testing/not_empty/empty_one/empty_two/empty####...three
-[OLD] /shren_testing/not_empty/empty_one/empty_two/empty####...three
-[NEW] /shren_testing/not_empty/empty_one/empty_two/empty_three
-[RENAMED] Directory: /shren_testing/not_empty/empty_one/empty_two/empty_three
-[OLD] /shren_testing/dir_level_one/dir_level_two/dir_level_three/Test fi!!!!le three.txt
-[NEW] /shren_testing/dir_level_one/dir_level_two/dir_level_three/test_file_three.txt
-[RENAMED] File: /shren_testing/dir_level_one/dir_level_two/dir_level_three/test_file_three.txt
-[EMPTY] Directory: /shren_testing/not_empty/empty_one/empty_two/empty_three/empty&&& four
-[REMOVED] Directory: /shren_testing/not_empty/empty_one/empty_two/empty_three/empty&&& four
-[EMPTY] Directory: /shren_testing/not_empty/empty_one/empty_two/empty_three
-[REMOVED] Directory: /shren_testing/not_empty/empty_one/empty_two/empty_three
-[EMPTY] Directory: /shren_testing/not_empty/empty_one/empty_two
-[REMOVED] Directory: /shren_testing/not_empty/empty_one/empty_two
-[EMPTY] Directory: /shren_testing/not_empty/empty_one
-[REMOVED] Directory: /shren_testing/not_empty/empty_one
-[INFO] Checking directory and file names...
-
-[INFO] Test completed...
-
-[INFO] Compare the results...
-```
-```terminal
 BEFORE:
 
  /shren_testing:
 dir LeVeL O**N**E/
 not_empty/
+not.empty.dot.one/
 Te$$ST F#@#!ILe-👍- Zero %.png
 
 /shren_testing/dir LeVeL O**N**E:
+bigdog.gif
+catfish.png
 D!IR... LE$%V%EL ___TW?O/
 Te$$$ST F!ILe-- One %A001.js
 TeST F!iLe-- One $b002.json
@@ -226,16 +145,27 @@ empty####...three/
 empty&&& four/
 
 /shren_testing/not_empty/empty_o@@ne/empty!!! two/empty####...three/empty&&& four:
+
+/shren_testing/not.empty.dot.one:
+not.empty.dot.two/
+test-me1.txt
+
+/shren_testing/not.empty.dot.one/not.empty.dot.two:
+test-me2.txt
 ```
 ```terminal
 AFTER:
 
+
  /shren_testing:
 dir_level_one/
 not_empty/
+not_empty_dot_one/
 test_file_zero.png
 
 /shren_testing/dir_level_one:
+bigdog.gif
+catfish.png
 dir_level_two/
 test_file_one_a001.js
 test_file_one_b002.json
@@ -251,6 +181,14 @@ test_file_three.txt
 
 /shren_testing/not_empty:
 a_file_in_not_empty.txt
+
+/shren_testing/not_empty_dot_one:
+not_empty_dot_two/
+test_me1.txt
+
+/shren_testing/not_empty_dot_one/not_empty_dot_two:
+test_me2.txt
+
 ```
 
 ### Example Results from `test_remove.sh`
@@ -260,8 +198,8 @@ Command used: `bash shren.sh ${testPath} -ye -f "removeme1.zip" -t "tmp temp 001
 ```terminal
 [SH][REN] TESTING FILE AND EMPTY DIRECTORY REMOVAL
 
-[EMPTY] Directory: /shren_testing/an empty one
-[REMOVED] Directory: /shren_testing/an empty one
+[EMPTY] Dir: /shren_testing/an empty one
+[REMOVED] Dir: /shren_testing/an empty one
 [MATCH] File: removeme1.zip
 [MATCH] /shren_testing/directory one/removeme1.zip
 [REMOVED] File: /shren_testing/directory one/removeme1.zip
@@ -274,6 +212,6 @@ Command used: `bash shren.sh ${testPath} -ye -f "removeme1.zip" -t "tmp temp 001
 [MATCH] File Type: *.tmp
 [MATCH] /shren_testing/not emp@@@ty one/this is a temp file 003.tmp
 [REMOVED] File: /shren_testing/not emp@@@ty one/this is a temp file 003.tmp
-[EMPTY] Directory: /shren_testing/not emp@@@ty one/empty two
-[REMOVED] Directory: /shren_testing/not emp@@@ty one/empty two
+[EMPTY] Dir: /shren_testing/not emp@@@ty one/empty two
+[REMOVED] Dir: /shren_testing/not emp@@@ty one/empty two
 ```
